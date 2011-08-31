@@ -51,6 +51,17 @@ h3 {
 	clear:both
 }
 /* ///////// menu's /////////// */
+.menu
+{
+	float: right;
+	/*position: absolute;
+	right: 0;*/
+	text-align: right;
+}
+.menu .button, #frame2 .menu .button
+{
+	margin: 5px 0 0 0;
+}
 .button
 {
 	border: 1px #666 solid;
@@ -96,7 +107,11 @@ h3 {
 {
 	width: 400px;
 	height: 400px;
-	margin: 0 0 8px 0;
+	/*margin: 0 0 8px 0;*/
+}
+#frame2 .button
+{
+	margin: 8px 0 0 0;
 }
 /* ///////// frame 3 /////////// */
 #bounds dl dt

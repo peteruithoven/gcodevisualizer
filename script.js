@@ -1,6 +1,15 @@
 var svg;
 var ieV;
 
+var minX = 0;
+var maxX = 0;
+var minY = 0;
+var maxY = 0;
+var minZ = 9999;
+var maxZ = 0;
+var minF = 9999;
+var maxF = 0;
+
 function init() {
 	//console.group("init");
 	ieV = getInternetExplorerVersion();
@@ -65,9 +74,11 @@ function procesGCode(gcode)
 	svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 	svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 	svg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+	svg.setAttribute('width', 400);
+	svg.setAttribute('height', 400);
 	svgContainer.appendChild(svg);
 	
-	var doc = svg.ownerDocument;
+	svgDoc = svg.ownerDocument;
 	var svgNS = svg.getAttribute("xmlns");
 	
 	var inches = false;
@@ -76,16 +87,16 @@ function procesGCode(gcode)
 	var prevY = 0;
 	var polyline;
 	var polylinePoints = "";
-	var minX = 0;
-	var maxX = 0;
-	var minY = 0;
-	var maxY = 0;
-	var minZ = 9999;
-	var maxZ = 0;
-	var minF = 9999;
-	var maxF = 0;
+	minX = 0;
+	maxX = 0;
+	minY = 0;
+	maxY = 0;
+	minZ = 9999;
+	maxZ = 0;
+	minF = 9999;
+	maxF = 0;
 	
-	startIcon = createStartIcon(doc,svgNS);
+	startIcon = createStartIcon(svgNS);
 	svg.appendChild(startIcon);
 	
 	var lines = gcode.split('\n')
@@ -118,7 +129,7 @@ function procesGCode(gcode)
 							{
 								polyline.setAttributeNS(null,'points', polylinePoints);
 							}
-							polyline = doc.createElementNS(svgNS,'polyline');
+							polyline = svgDoc.createElementNS(svgNS,'polyline');
 							polyline.setAttributeNS(null,'fill', "none");
 							polyline.setAttributeNS(null,'stroke-width', "0.5");
 							polyline.setAttributeNS(null,'stroke-linecap', "round");
@@ -166,11 +177,20 @@ function procesGCode(gcode)
 		polyline.setAttributeNS(null,'points', polylinePoints);
 	}
 	
-	finishIcon = createFinishIcon(doc,svgNS,prevX,prevY);
+	finishIcon = createFinishIcon(svgNS,prevX,prevY);
 	svg.appendChild(finishIcon);
 	
-	svg.setAttributeNS(null,'viewBox', (minX-1)+' '+(minY-1)+' '+(maxX+2)+' '+(maxY+2));
+	//svg.setAttributeNS(null,'viewBox', (minX-1)+' '+(minY-1)+' '+(maxX+2)+' '+(maxY+2));
+	//svg.setAttributeNS(null,'viewBox', (minX)+' '+(minY)+' '+(maxX)+' '+(maxY));
+	setViewbox((minX-1),(minY-1),(maxX+2),(maxY+2));
+	zoom(0);	
 	svg.setAttributeNS(null,'preserveAspectRatio', 'xMinYMin');
+
+	
+	// events
+	svg.onmousedown = mouseDown;
+	svg.onmouseup = mouseUp;
+	svg.onmousemove = mouseMove;
 	
 	// update code for download
 	var downloadCode = document.getElementById("downloadCode");
@@ -197,9 +217,9 @@ function procesGCode(gcode)
 	//console.groupEnd();
 }
 
-function createStartIcon(doc,svgNS)
+function createStartIcon(svgNS)
 {
-	var startIcon = doc.createElementNS(svgNS,'circle');
+	var startIcon = svgDoc.createElementNS(svgNS,'circle');
 	startIcon.setAttributeNS(null,'cx', 0);
 	startIcon.setAttributeNS(null,'cy', 0);
 	startIcon.setAttributeNS(null,'r', 0.5);
@@ -208,9 +228,9 @@ function createStartIcon(doc,svgNS)
 	startIcon.setAttributeNS(null,'opacity', 1);
 	return startIcon;
 }
-function createFinishIcon(doc,svgNS,x,y)
+function createFinishIcon(svgNS,x,y)
 {
-	var finishIcon = doc.createElementNS(svgNS,'circle');
+	var finishIcon = svgDoc.createElementNS(svgNS,'circle');
 	finishIcon.setAttributeNS(null,'cx', x);
 	finishIcon.setAttributeNS(null,'cy', y);
 	finishIcon.setAttributeNS(null,'r', 0.7);
@@ -225,7 +245,8 @@ function createFinishIcon(doc,svgNS,x,y)
 
 
 // convert XML node content into string
-function getNodeXML (node) {
+function getNodeXML (node) 
+{
 	if (node)
 	{
 		return (node.xml || (new XMLSerializer()).serializeToString(node) || "").replace(/(.*)( xmlns=\".*?\")(.*)/g, "$1$3");
@@ -234,4 +255,112 @@ function getNodeXML (node) {
 	{
 		return '';
 	}
+}
+
+// zooming and moving svg
+function zoom(type) 
+{
+	//console.group("zoom");
+	//console.log("type: ",type);
+	viewbox = getViewbox(svg);
+	//console.log("viewbox: ",viewbox);
+	var vx, vy, vw, vh;
+	switch(type) {
+		case -1: 
+			vx = (viewbox.x - 0.1*viewbox.w/2).toPrecision(3);
+			vy = (viewbox.y - 0.1*viewbox.h/2).toPrecision(3);
+			vw = (viewbox.w*1.1).toPrecision(3);
+			vh = (viewbox.h*1.1).toPrecision(3);
+			break;
+		case 0:
+			//var size = Math.max(parseFloat(svg.getAttributeNS(null,'width')), parseFloat(svg.getAttributeNS(null,'height')));
+			var size = 400;
+			//console.log("width: ",code.documentElement.getAttribute('width'));
+			vx = 0-1;
+			vy = 0-1;
+			vw = maxX-minX+2;
+			vh = maxY-minY+2;
+			break;
+		case 1: 
+			vx = (viewbox.x + 0.1*viewbox.w/2).toPrecision(3);
+			vy = (viewbox.y + 0.1*viewbox.h/2).toPrecision(3);
+			vw = (viewbox.w/1.1).toPrecision(3);
+			vh = (viewbox.h/1.1).toPrecision(3);
+			break;
+	}
+	setViewbox(vx,vy,vw,vh);
+	//console.groupEnd();
+}
+var drag;
+var offset;
+var viewbox;
+
+function mouseDown(e) 
+{
+	drag = true;
+	
+	offset = mouseCoords(e);
+	viewbox = getViewbox(svg);
+	return false;
+}
+function mouseUp(e) 
+{
+	drag = false;
+}
+function mouseMove(e)
+{
+	if(drag) 
+	{
+		e = e || window.event;
+		var pos = mouseCoords(e);
+		
+		var svgContainer = document.getElementById("svgContainer");
+		
+		var dx = (pos.x - offset.x) * viewbox.w/svgContainer.offsetWidth;
+		var dy = (pos.y - offset.y) * viewbox.h/svgContainer.offsetHeight;
+		
+		console.log("svgContainer.offsetWidth: ",svgContainer.offsetWidth);
+		console.log("svgContainer.offsetHeight: ",svgContainer.offsetHeight);
+		
+		var vx = (viewbox.x - dx).toPrecision(3);
+		var vy = (viewbox.y - dy).toPrecision(3);
+		var vw = viewbox.w;
+		var vh = viewbox.h;
+		svg.setAttribute('viewBox', vx + ' ' + vy + ' ' + vw + ' ' + vh);
+		//setViewbox(vx,vy,vw,vh);
+		
+		return false;
+		
+	}
+}
+function getViewbox(svg) 
+{
+	viewbox = svg.getAttribute('viewBox').split(" ");
+	var obj = { 
+		x: parseInt(viewbox[0]),
+		y: parseInt(viewbox[1]),
+		w: parseInt(viewbox[2]),
+		h: parseInt(viewbox[3])
+		};
+	return obj
+}
+function setViewbox(x,y,w,h) 
+{
+	var value = (x)+' '+(y)+' '+(w)+' '+(h);
+	svg.setAttributeNS(null,'viewBox',value);
+}
+function mouseCoords(e) 
+{
+	if(e.pageX || e.pageY)
+	{
+		obj = { x:e.pageX, y:e.pageY };
+	}
+	else
+	{
+		obj = {
+			x:e.clientX + document.body.scrollLeft - document.body.clientLeft,
+			y:e.clientY + document.body.scrollTop  - document.body.clientTop
+		};
+	}
+	return obj;
 }

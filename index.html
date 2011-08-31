@@ -66,6 +66,11 @@ G00 X0.000 Y0.000 F300
     				<input type="submit" value="update" name="update" class="button" onclick="updateSVG();">
 				</div>
 				<div id="frame2" class="frame">
+					<div class="menu">
+						<input type="button" class="button" value="+" onclick="zoom(1);" title="zoom in" />
+						<input type="button" class="button" value="&#8853;" onclick="zoom(0);" title="default viewbox" />
+						<input type="button" class="button" value="&#8722;" onclick="zoom(-1);" title="zoom out" />
+					</div>
 					<h2>SVG top view</h2>
 					<div id="svgContainer">
 						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg" width="400" height="400">
