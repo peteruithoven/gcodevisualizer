@@ -165,14 +165,18 @@ function procesGCode(gcode)
 	{
 		polyline.setAttributeNS(null,'points', polylinePoints);
 	}
-						
+	
 	finishIcon = createFinishIcon(doc,svgNS,prevX,prevY);
 	svg.appendChild(finishIcon);
 	
 	svg.setAttributeNS(null,'viewBox', (minX-1)+' '+(minY-1)+' '+(maxX+2)+' '+(maxY+2));
 	svg.setAttributeNS(null,'preserveAspectRatio', 'xMinYMin');
 	
+	// update code for download
+	var downloadCode = document.getElementById("downloadCode");
+	downloadCode.value = getNodeXML(svg);
 	
+	// update bounds
 	var units = (inches)? "inches" : "mm";
 	
 	var boundsHTML = "<dl>";
@@ -215,4 +219,19 @@ function createFinishIcon(doc,svgNS,x,y)
 	finishIcon.setAttributeNS(null,'fill', 'none');
 	finishIcon.setAttributeNS(null,'opacity', 1);
 	return finishIcon;
+}
+
+
+
+
+// convert XML node content into string
+function getNodeXML (node) {
+	if (node)
+	{
+		return (node.xml || (new XMLSerializer()).serializeToString(node) || "").replace(/(.*)( xmlns=\".*?\")(.*)/g, "$1$3");
+	}
+	else
+	{
+		return '';
+	}
 }

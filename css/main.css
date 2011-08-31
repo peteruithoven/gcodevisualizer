@@ -33,8 +33,8 @@ h3 {
 {
 	position: absolute;
 	left: 50%;
-	width: 997px;
-	margin-left: -498.5px;
+	width: 989px;
+	margin-left: -494.5px;
 }
 #editor 
 {
@@ -85,9 +85,10 @@ h3 {
 /* ///////// frame 1: GCode /////////// */
 #frame1 textarea
 {
-	margin: 0 0 8px 0;
-	width: 400px;
-	height: 369px;
+	width: 392px;
+	height: 391px;
+    margin: 0 0 8px;
+    padding: 4px;   
 }
 
 /* ///////// frame 2: SVG top view /////////// */
@@ -95,13 +96,9 @@ h3 {
 {
 	width: 400px;
 	height: 400px;
+	margin: 0 0 8px 0;
 }
 /* ///////// frame 3 /////////// */
-#frame3 svg
-{
-	width: 400px;
-	height: 200px;
-}
 #bounds dl dt
 {
 	float: left;
