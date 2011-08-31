@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>GCode visualizer</title>
+		<link rel="stylesheet" type="text/css" href="css/reset.css" />
+		<link rel="stylesheet" type="text/css" href="css/forms.css" />
+		<link rel="stylesheet" type="text/css" href="css/main.css" />
+		<script type="text/javascript" src="script.js"></script>
+	</head>
+	<body onload="updateSVG();">
+		<div id="container">
+			<h1>GCode visualizer (beta)</h1>
+			<div id="ieerror">
+				<p>It seems your using Internet Explorer {version}. Since IE is the only browser that doesn't fully support SVG, we would like to ask you to download a browser that does. Like: 
+					<ul>
+						<li><a href="http://www.mozilla.com/firefox/" target="_blank">Mozilla Firefox</a></li>
+						<li><a href="www.opera.com/" target="_blank">Opera</a></li>
+						<li><a href="http://www.chromium.org/" target="_blank">Chromium</a></li>
+						<li><a href="http://www.google.com/chrome" target="_blank">Google Chrome</a></li>
+					</ul>
+				</p>
+			</div>
+			<div id="editor">
+				<div id="frame1" class="frame">
+					<h2>GCode</h2>
+					<textarea name="drillCode" onchange="updateSVG();" id="gcode" class="code">
+G21 
+G90
+
+F100
+S1000
+
+G00 X0.000 Y0.000 Z0.000
+
+G01 Z-1.000 F100
+G01 X5 Y0 F100
+G01 X5 Y5 F100
+G01 X0 Y5 F100
+G01 X0 Y0 F100
+G01 Z1.000 F300
+
+G00 X10.000 Y0.000 F300
+
+G01 Z-0.500 F100
+G01 X15 Y0 F100
+G01 X15 Y5 F100
+G01 X10 Y5 F100
+G01 X10 Y0 F100
+G01 Z1.000 F300
+
+G00 X0.000 Y10.000 F300
+
+G01 Z-0.200 F100
+G01 X15 Y10 F100
+G01 X15 Y14 F100
+G01 X13 Y14 F100
+G01 X13 Y15 F100
+G01 X2 Y15 F100
+G01 X2 Y14 F100
+G01 X0 Y14 F100
+G01 X0 Y10 F100
+G01 Z1.000 F300
+
+G00 X0.000 Y0.000 F300
+					</textarea><br /> 
+    				<input type="submit" value="update" name="update" class="button" onclick="updateSVG();">
+				</div>
+				<div id="frame2" class="frame">
+					<h2>SVG top view</h2>
+					<embed width="400" height="400" type="image/svg+xml">
+						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg" width="400" height="400">
+						</svg>
+					</embed>
+				</div>
+				<div id="frame3" class="frame">
+					<h2>Bounds</h2>
+					<div id="bounds"></div>
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,156 @@
+/* ///////// typography /////////// */
+body, textarea, input[type="text"], input[type="password"], input.text, input.title, textarea, select
+{
+	font-family: Georgia, serif;
+	font-size: 10pt;
+}
+textarea.code, input.code
+{
+	font-family: Courier, sans;
+	font-size: 9pt;
+}
+
+h1 {
+	font-size:2em;
+	font-weight:normal;
+	margin:0 0;
+}
+
+h2 {
+	font-size:1.2em;
+	font-weight:normal;
+	margin:0 0;
+}
+
+h3 {
+	font-size: 8pt;
+	font-weight:bold;
+	margin:0 0 0 2px;
+}
+
+/* ///////// global layout /////////// */
+#container
+{
+	position: absolute;
+	left: 50%;
+	width: 997px;
+	margin-left: -498.5px;
+}
+#editor 
+{
+	background-color:#ddd;
+}
+.frame 
+{	
+	margin: 3px 0 8px 8px;
+	float: left;
+	position: relative;
+}
+.clear
+{
+	clear:both
+}
+/* ///////// menu's /////////// */
+.button
+{
+	border: 1px #666 solid;
+	line-height: 1px;
+	padding-bottom: 4px;
+	height: 19px;
+	text-align: center;
+	background-color: #333;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#555), to(#000));
+	background-image: -webkit-linear-gradient(top, #555, #000);
+	background-image: -moz-linear-gradient(top, #555, #000);
+	background-image: -ms-linear-gradient(top, #555, #000);
+	background-image: -o-linear-gradient(top, #555, #000);
+	background-image: linear-gradient(top, #555, #000);
+	filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0, startColorstr='#555555', endColorstr='#000000');
+	color: #eee;
+}
+.button:hover 
+{
+	border: 1px #5f9191 solid;
+	background-color: #75b2b2;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#3F83FF), to(#286BAA));
+	background-image: -webkit-linear-gradient(top, #3F83FF, #286BAA);
+	background-image: -moz-linear-gradient(top, #3F83FF, #286BAA);
+	background-image: -ms-linear-gradient(top, #3F83FF, #286BAA);
+	background-image: -o-linear-gradient(top, #3F83FF, #286BAA);
+	background-image: linear-gradient(top, #3F83FF, #286BAA);
+	filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0, startColorstr='#3F83FF', endColorstr='#286BAA');
+	color: #fff;
+}
+
+/* ///////// frame 1: GCode /////////// */
+#frame1 textarea
+{
+	margin: 0 0 8px 0;
+	width: 400px;
+	height: 369px;
+}
+
+/* ///////// frame 2: SVG top view /////////// */
+#frame2 svg
+{
+	width: 400px;
+	height: 400px;
+}
+/* ///////// frame 3 /////////// */
+#frame3 svg
+{
+	width: 400px;
+	height: 200px;
+}
+#bounds dl dt
+{
+	float: left;
+	width: 50px;
+	clear: left;
+}
+#bounds dl dd
+{
+	float: left;
+	width: 100px;
+	text-align: right
+}
+
+
+/* ///////// SVG /////////// */
+svg
+{
+	border: 1px solid #aaa;
+	overflow: hidden;
+	background-color:#fff;
+}
+/* ///////// forms /////////// */
+input[type="text"], input[type="password"], input.text, input.title, textarea, select
+{
+	padding: 2px 4px;
+	margin: 0;
+}
+
+/* ///////// ieerror /////////// */
+#ieerror
+{
+	margin-bottom: 10px;
+	background-color: #ffa3a3;
+	border: 1px #ff5e5b solid;
+	padding: 10px; 
+	display: none;
+}
+#ieerror ul
+{
+	list-style: inside;
+}
+#ieerror a
+{
+	color: #0E6161;
+}
+
+
+/* ///////// others /////////// */
+#editor , #index, #result
+{
+	border:thin solid #bbb;
+}
