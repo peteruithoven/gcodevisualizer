@@ -1,23 +1,56 @@
 var svg;
+var ieV;
+
+function init() {
+	//console.group("init");
+	ieV = getInternetExplorerVersion();
+	//console.log("ieV: ",ieV);
+	if(ieV > -1)
+	{
+		var ieError = document.getElementById('ieerror');
+		ieError.style.display = "block";
+		ieError.innerHTML = ieError.innerHTML.replace("{version}",ieV);
+	}
+	if(ieV == -1 || ieV >= 9.0)
+	{
+		updateSVG();
+	}
+	//console.groupEnd();
+}
+// Returns the version of Internet Explorer or a -1
+// (indicating the use of another browser).
+function getInternetExplorerVersion()
+{
+  var rv = -1; // Return value assumes failure.
+  if (navigator.appName == 'Microsoft Internet Explorer')
+  {
+    var ua = navigator.userAgent;
+    var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+    if (re.exec(ua) != null)
+      rv = parseFloat( RegExp.$1 );
+  }
+  return rv;
+}
+
 
 function updateSVG()
 {
-	console.group("updateSVG");
+	//console.group("updateSVG");
 	
 	var gcode;
 	gcode = document.getElementById('gcode').value;
-	console.log("gcode: ",gcode);
+	//console.log("gcode: ",gcode);
 	
 	svg = document.getElementById('svg');
 	//console.log("svg: ",svg);
 	
 	procesGCode(gcode);
 	
-	console.groupEnd();
+	//console.groupEnd();
 }
 function procesGCode(gcode)
 {
-	console.group("procesGCode");
+	//console.group("procesGCode");
 	//console.log("gcode: ",gcode);
 	
 	// remove comments
@@ -25,7 +58,14 @@ function procesGCode(gcode)
 	//console.log("->gcode: ",gcode);
 	
 	// clear svg
-	while(svg.childNodes.length) svg.removeChild(svg.childNodes[0]);
+	var svgContainer = document.getElementById('svgContainer');
+	while(svgContainer.childNodes.length) svgContainer.removeChild(svgContainer.childNodes[0]);
+	
+	// recreate svg
+	svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+	svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+	svg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+	svgContainer.appendChild(svg);
 	
 	var doc = svg.ownerDocument;
 	var svgNS = svg.getAttribute("xmlns");
@@ -145,12 +185,12 @@ function procesGCode(gcode)
 	boundsHTML += "<dt>F min: </dt><dd>"+minF+'</dd>';
 	boundsHTML += "<dt>F max: </dt><dd>"+maxF+'</dd>';
 	boundsHTML += "</dl>";
-	console.log("boundsHTML: ",boundsHTML);
+	//console.log("boundsHTML: ",boundsHTML);
 	boundsDiv = document.getElementById('bounds');
 	boundsDiv.innerHTML = boundsHTML;
 	
 	//console.log("svg: ",svg);
-	console.groupEnd();
+	//console.groupEnd();
 }
 
 function createStartIcon(doc,svgNS)

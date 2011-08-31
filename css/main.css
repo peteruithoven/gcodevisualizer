@@ -114,8 +114,21 @@ h3 {
 	width: 100px;
 	text-align: right
 }
-
-
+/* ///////// footer /////////// */
+#footer
+{
+	text-align: right;
+	color: #aaa;
+	font-size: 8pt;
+}
+#footer a
+{
+	color: #3F83FF;
+}
+#footer a:hover
+{
+	color: #225BDE;
+}
 /* ///////// SVG /////////// */
 svg
 {

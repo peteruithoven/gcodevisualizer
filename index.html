@@ -7,7 +7,7 @@
 		<link rel="stylesheet" type="text/css" href="css/main.css" />
 		<script type="text/javascript" src="script.js"></script>
 	</head>
-	<body onload="updateSVG();">
+	<body onload="init();">
 		<div id="container">
 			<h1>GCode visualizer (beta)</h1>
 			<div id="ieerror">
@@ -67,17 +67,21 @@ G00 X0.000 Y0.000 F300
 				</div>
 				<div id="frame2" class="frame">
 					<h2>SVG top view</h2>
-					<embed width="400" height="400" type="image/svg+xml">
+					<div id="svgContainer">
 						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg" width="400" height="400">
-						</svg>
-					</embed>
+					</div>
+					</svg>
 				</div>
 				<div id="frame3" class="frame">
 					<h2>Bounds</h2>
-					<div id="bounds"></div>
+					<div id="bounds"></div>				
 				</div>
 				<div class="clear"></div>
 			</div>
+			<div id="footer">
+				Initiatief van <a href="http://www.fablabamersfoort.nl" target="_blank">Fablab Amersfoort</a>. <a href="https://github.com/peteruithoven/gcodevisualizer" target="_blank">Source code</a>
+			</div>
+
 		</div>
 	</body>
 </html>
