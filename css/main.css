@@ -29,6 +29,15 @@ h3 {
 }
 
 /* ///////// global layout /////////// */
+body, html
+{
+	width: 100%;
+}
+#outerContainer
+{
+	position: relative;
+	min-width: 1005px;
+}
 #container
 {
 	position: absolute;

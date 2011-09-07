@@ -8,22 +8,23 @@
 		<script type="text/javascript" src="script.js"></script>
 	</head>
 	<body onload="init();">
-		<div id="container">
-			<h1>GCode visualizer (beta)</h1>
-			<div id="ieerror">
-				<p>It seems your using Internet Explorer {version}. Since IE is the only browser that doesn't fully support SVG, we would like to ask you to download a browser that does. Like: 
-					<ul>
-						<li><a href="http://www.mozilla.com/firefox/" target="_blank">Mozilla Firefox</a></li>
-						<li><a href="www.opera.com/" target="_blank">Opera</a></li>
-						<li><a href="http://www.chromium.org/" target="_blank">Chromium</a></li>
-						<li><a href="http://www.google.com/chrome" target="_blank">Google Chrome</a></li>
-					</ul>
-				</p>
-			</div>
-			<div id="editor">
-				<div id="frame1" class="frame">
-					<h2>GCode</h2>
-					<textarea name="drillCode" onchange="updateSVG();" id="gcode" class="code">
+		<div id="outerContainer">
+			<div id="container">
+				<h1>GCode visualizer (beta)</h1>
+				<div id="ieerror">
+					<p>It seems your using Internet Explorer {version}. Since IE is the only browser that doesn't fully support SVG, we would like to ask you to download a browser that does. Like: 
+						<ul>
+							<li><a href="http://www.mozilla.com/firefox/" target="_blank">Mozilla Firefox</a></li>
+							<li><a href="www.opera.com/" target="_blank">Opera</a></li>
+							<li><a href="http://www.chromium.org/" target="_blank">Chromium</a></li>
+							<li><a href="http://www.google.com/chrome" target="_blank">Google Chrome</a></li>
+						</ul>
+					</p>
+				</div>
+				<div id="editor">
+					<div id="frame1" class="frame">
+						<h2>GCode</h2>
+						<textarea name="drillCode" onchange="updateSVG();" id="gcode" class="code">
 G21 
 G90
 
@@ -62,36 +63,38 @@ G01 X0 Y10 F100
 G01 Z1.000 F300
 
 G00 X0.000 Y0.000 F300
-					</textarea><br /> 
-    				<input type="submit" value="update" name="update" class="button" onclick="updateSVG();">
-				</div>
-				<div id="frame2" class="frame">
-					<div class="menu">
-						<input type="button" class="button" value="+" onclick="zoom(1);" title="zoom in" />
-						<input type="button" class="button" value="&#8853;" onclick="zoom(0);" title="default viewbox" />
-						<input type="button" class="button" value="&#8722;" onclick="zoom(-1);" title="zoom out" />
+						</textarea><br /> 
+	    				<input type="submit" value="update" name="update" class="button" onclick="updateSVG();">
 					</div>
-					<h2>SVG top view</h2>
-					<div id="svgContainer">
-						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg" width="400" height="400">
+					<div id="frame2" class="frame">
+						<div class="menu">
+							<input type="button" class="button" value="+" onclick="zoom(1);" title="zoom in" />
+							<input type="button" class="button" value="&#8853;" onclick="zoom(0);" title="default viewbox" />
+							<input type="button" class="button" value="&#8722;" onclick="zoom(-1);" title="zoom out" />
+						</div>
+						<h2>SVG top view</h2>
+						<div id="svgContainer">
+							<svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg" width="400" height="400">
+						</div>
+						
+						<form id="downloadform" action="visualizer.php?id=downloadFile" method="post">
+							<input type="hidden" name="content" id="downloadCode" value="" />					
+							<input type="submit" value="Download" name="download" class="button" />
+						</form>
+						</svg>
 					</div>
-					
-					<form id="downloadform" action="visualizer.php?id=downloadFile" method="post">
-						<input type="hidden" name="content" id="downloadCode" value="" />					
-						<input type="submit" value="Download" name="download" class="button" />
-					</form>
-					</svg>
+					<div id="frame3" class="frame">
+						<h2>Bounds</h2>
+						<div id="bounds"></div>		
+						Line width: 0.5mm
+					</div>
+					<div class="clear"></div>
 				</div>
-				<div id="frame3" class="frame">
-					<h2>Bounds</h2>
-					<div id="bounds"></div>				
+				<div id="footer">
+					Initiative of <a href="http://www.fablabamersfoort.nl" target="_blank">Fablab Amersfoort</a> - <a href="https://github.com/peteruithoven/gcodevisualizer" target="_blank">Code</a> - <a href="https://github.com/peteruithoven/gcodevisualizer/issues" target="_blank">Issues / suggestions</a>
 				</div>
-				<div class="clear"></div>
+	
 			</div>
-			<div id="footer">
-				Initiative of <a href="http://www.fablabamersfoort.nl" target="_blank">Fablab Amersfoort</a> - <a href="https://github.com/peteruithoven/gcodevisualizer" target="_blank">Code</a> - <a href="https://github.com/peteruithoven/gcodevisualizer/issues" target="_blank">Issues / suggestions</a>
-			</div>
-
 		</div>
 	</body>
 </html>

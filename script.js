@@ -9,6 +9,7 @@ var minZ = 9999;
 var maxZ = 0;
 var minF = 9999;
 var maxF = 0;
+var units = "mm";
 
 function init() {
 	//console.group("init");
@@ -81,7 +82,6 @@ function procesGCode(gcode)
 	svgDoc = svg.ownerDocument;
 	var svgNS = svg.getAttribute("xmlns");
 	
-	var inches = false;
 	var drilling = false;
 	var prevX = 0;
 	var prevY = 0;
@@ -111,20 +111,18 @@ function procesGCode(gcode)
 			var command = commands[j];
 			if(command == '') continue;
 			//console.log("command: ",command);
-			switch(command)
+			
+			var type = command.charAt(0);
+			//console.log("type: ",type);
+			var value = parseFloat(command.slice(1));
+			//console.log("value: ",value);
+			switch(type)
 			{
-				case "G20":
-					inches = true;
-					break;
-				default:
-					var type = command.charAt(0);
-					//console.log("type: ",type);
-					var value = parseFloat(command.slice(1));
-					//console.log("value: ",value);
-					switch(type)
+				case "G":
+					switch(value)
 					{
-						case "G":
-							if(value != 0 && value != 1) break;
+						case 0:
+						case 1:
 							if(polyline != undefined && polylinePoints != "")
 							{
 								polyline.setAttributeNS(null,'points', polylinePoints);
@@ -143,31 +141,37 @@ function procesGCode(gcode)
 							
 							polylinePoints = prevX+','+prevY;
 							break;
-						case "X":
-							if(polylinePoints != "")
-								polylinePoints += ' ';
-							polylinePoints += value;
-							prevX = value;
-							
-							if(value < minX) minX = value;
-							else if(value > maxX) maxX = value;
+						case 20: //inches
+							procesGCode(convertAllInches2mm(gcode));
+							return;
 							break;
-						case "Y":
-							polylinePoints += ","+value;
-							prevY = value;
-							
-							if(value < minY) minY = value;
-							else if(value > maxY) maxY = value;
-							break;
-						case "Z":
-							if(value < minZ) minZ = value;
-							else if(value > maxZ) maxZ = value;
-							break;
-						case "F":
-							if(value < minF) minF = value;
-							else if(value > maxF) maxF = value;
+						case 21: //mm							
 							break;
 					}
+					break;
+				case "X":
+					if(polylinePoints != "")
+						polylinePoints += ' ';
+					polylinePoints += value;
+					prevX = value;
+					
+					if(value < minX) minX = value;
+					else if(value > maxX) maxX = value;
+					break;
+				case "Y":
+					polylinePoints += ","+value;
+					prevY = value;
+					
+					if(value < minY) minY = value;
+					else if(value > maxY) maxY = value;
+					break;
+				case "Z":
+					if(value < minZ) minZ = value;
+					else if(value > maxZ) maxZ = value;
+					break;
+				case "F":
+					if(value < minF) minF = value;
+					else if(value > maxF) maxF = value;
 					break;
 			}
 		}
@@ -182,8 +186,12 @@ function procesGCode(gcode)
 	
 	//svg.setAttributeNS(null,'viewBox', (minX-1)+' '+(minY-1)+' '+(maxX+2)+' '+(maxY+2));
 	//svg.setAttributeNS(null,'viewBox', (minX)+' '+(minY)+' '+(maxX)+' '+(maxY));
-	setViewbox((minX-1),(minY-1),(maxX+2),(maxY+2));
-	zoom(0);	
+	
+	var width = maxX-minX;
+	var height = maxY-minY;
+	
+	setViewbox((minX-1),(minY-1),(width+2),(height+2));
+	//zoom(0);	
 	svg.setAttributeNS(null,'preserveAspectRatio', 'xMinYMin');
 
 	
@@ -197,17 +205,16 @@ function procesGCode(gcode)
 	downloadCode.value = getNodeXML(svg);
 	
 	// update bounds
-	var units = (inches)? "inches" : "mm";
 	
 	var boundsHTML = "<dl>";
-	boundsHTML += "<dt>X min: </dt><dd>"+minX+' '+units+'</dd>';
-	boundsHTML += "<dt>X max: </dt><dd>"+maxX+' '+units+'</dd>';
-	boundsHTML += "<dt>Y min: </dt><dd>"+minY+' '+units+'</dd>';
-	boundsHTML += "<dt>Y max: </dt><dd>"+maxY+' '+units+'</dd>';
-	boundsHTML += "<dt>Z min: </dt><dd>"+minZ+' '+units+'</dd>';
-	boundsHTML += "<dt>Z max: </dt><dd>"+maxZ+' '+units+'</dd>';
-	boundsHTML += "<dt>F min: </dt><dd>"+minF+'</dd>';
-	boundsHTML += "<dt>F max: </dt><dd>"+maxF+'</dd>';
+	boundsHTML += "<dt>X min: </dt><dd>"+minX.toFixed(2)+' '+units+'</dd>';
+	boundsHTML += "<dt>X max: </dt><dd>"+maxX.toFixed(2)+' '+units+'</dd>';
+	boundsHTML += "<dt>Y min: </dt><dd>"+minY.toFixed(2)+' '+units+'</dd>';
+	boundsHTML += "<dt>Y max: </dt><dd>"+maxY.toFixed(2)+' '+units+'</dd>';
+	boundsHTML += "<dt>Z min: </dt><dd>"+minZ.toFixed(2)+' '+units+'</dd>';
+	boundsHTML += "<dt>Z max: </dt><dd>"+maxZ.toFixed(2)+' '+units+'</dd>';
+	boundsHTML += "<dt>F min: </dt><dd>"+minF.toFixed(2)+'</dd>';
+	boundsHTML += "<dt>F max: </dt><dd>"+maxF.toFixed(2)+'</dd>';
 	boundsHTML += "</dl>";
 	//console.log("boundsHTML: ",boundsHTML);
 	boundsDiv = document.getElementById('bounds');
@@ -242,6 +249,23 @@ function createFinishIcon(svgNS,x,y)
 }
 
 
+function inches2mm(match)
+{
+	var axis = match.slice(0,1);
+	var inches = parseFloat(match.slice(1));
+	var mm = inches*25.4;
+	var space = match.match(/\s/i);;
+  	return axis+mm+space;
+}
+function convertAllInches2mm(gcode)
+{
+	//console.log("convertAllInches2mm");
+	
+	var gcode = gcode.replace('G20', 'G21');
+	
+	var gcodeMM = gcode.replace(/([X|Y|F|Z])([0-9.-]*?)(\s)/ig, inches2mm);
+	return gcodeMM;
+}
 
 
 // convert XML node content into string
@@ -249,7 +273,7 @@ function getNodeXML (node)
 {
 	if (node)
 	{
-		return (node.xml || (new XMLSerializer()).serializeToString(node) || "").replace(/(.*)( xmlns=\".*?\")(.*)/g, "$1$3");
+		return (node.xml || (new XMLSerializer()).serializeToString(node) || ""); //.replace(/(.*)( xmlns=\".*?\")(.*)/g, "$1$3");
 	}
 	else
 	{
@@ -319,8 +343,8 @@ function mouseMove(e)
 		var dx = (pos.x - offset.x) * viewbox.w/svgContainer.offsetWidth;
 		var dy = (pos.y - offset.y) * viewbox.h/svgContainer.offsetHeight;
 		
-		console.log("svgContainer.offsetWidth: ",svgContainer.offsetWidth);
-		console.log("svgContainer.offsetHeight: ",svgContainer.offsetHeight);
+		//console.log("svgContainer.offsetWidth: ",svgContainer.offsetWidth);
+		//console.log("svgContainer.offsetHeight: ",svgContainer.offsetHeight);
 		
 		var vx = (viewbox.x - dx).toPrecision(3);
 		var vy = (viewbox.y - dy).toPrecision(3);
